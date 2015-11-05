@@ -40,6 +40,8 @@ object CaseClassDeserializerTest
   }
 
   case class ArrayHolder(value: Array[Byte])
+
+  case class GenericArrayHolder[T](value: Array[T])
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -122,6 +124,15 @@ class CaseClassDeserializerTest extends DeserializerTest {
 
   it should "support Array[Byte] properties" in {
     val result = deserialize[ArrayHolder]("""{"value":"AQID"}""")
+
+    result.value shouldBe an[Array[Byte]]
     result.value should equal (Array[Byte](1,2,3))
+  }
+
+  it should "support generic Array[T] properties" in {
+    val result = deserialize[GenericArrayHolder[Long]]("""{"value":[1, 2, 3]}""")
+
+    result.value shouldBe an[Array[Long]]
+    result.value should contain theSameElementsAs Array[Long](1, 2, 3)
   }
 }
